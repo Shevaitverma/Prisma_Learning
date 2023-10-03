@@ -1,7 +1,8 @@
 const prisma = require("../prisma/index");
 const asyncHandler = require("express-async-handler")
 const cookieToken = require("../utils/cookieToken");
-const { json } = require("express");
+const bcrypt = require("bcryptjs");
+
 
 // user registeration
 const registerUser = asyncHandler(async(req, res)=>{
@@ -24,12 +25,16 @@ const registerUser = asyncHandler(async(req, res)=>{
         throw new Error("Emamil already exists")
     }
 
+    //hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // Creating user
     const user = await prisma.user.create({
         data:{
             name,
             email, 
-            password
+            password: hashedPassword
         }
     })
 
@@ -38,9 +43,60 @@ const registerUser = asyncHandler(async(req, res)=>{
 });
 
 // user login
+const loginUser = asyncHandler(async(req, res)=>{
+    const {email, password} = req.body;
 
+    // check if user enter data
+    if(!email, !password){
+        res.status(400)
+        throw new Error("Please enter email and password")
+    }
+
+    // get user exists
+    const user = await prisma.user.findUnique({
+        where:{
+            email
+        }
+    })
+
+    // if user not found
+    if(!user){
+        throw new Error("User not found")
+    }
+
+    // // this method is used when password is not encrypted (for testing purpose only)
+    // if(user.password !== password){
+    //     throw new Error('password is incorrect')
+    // }
+    // cookieToken(user, res)
+
+
+    // check if password is correct
+    const isPassword = await bcrypt.compare(password, user.password)
+
+    if(user && isPassword){
+        cookieToken(user, res)
+    }else{
+        throw new Error("password is incorrect")
+    }
+
+})
+
+// logout user 
+const logoutUser = asyncHandler(async(req, res)=>{
+    try {
+        res.clearCookie('token')
+        res.status(200).json({
+            success: true
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 
 
 module.exports = {
-    registerUser
+    registerUser,
+    loginUser,
+    logoutUser
 }
