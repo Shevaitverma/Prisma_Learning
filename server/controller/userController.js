@@ -69,6 +69,7 @@ const loginUser = asyncHandler(async(req, res)=>{
     //     throw new Error('password is incorrect')
     // }
     // cookieToken(user, res)
+    //
 
 
     // check if password is correct
