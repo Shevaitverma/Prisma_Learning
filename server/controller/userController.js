@@ -57,28 +57,20 @@ const loginUser = asyncHandler(async(req, res)=>{
         where:{
             email
         }
-    })
+    });
 
     // if user not found
     if(!user){
-        throw new Error("User not found")
+        throw new Error("User not found");
     }
 
-    // // this method is used when password is not encrypted (for testing purpose only)
-    // if(user.password !== password){
-    //     throw new Error('password is incorrect')
-    // }
-    // cookieToken(user, res)
-    //
-
-
     // check if password is correct
-    const isPassword = await bcrypt.compare(password, user.password)
+    const isPassword = await bcrypt.compare(password, user.password);
 
     if(user && isPassword){
-        cookieToken(user, res)
+        cookieToken(user, res);
     }else{
-        throw new Error("password is incorrect")
+        throw new Error("password is incorrect");
     }
 
 })
@@ -86,12 +78,12 @@ const loginUser = asyncHandler(async(req, res)=>{
 // logout user 
 const logoutUser = asyncHandler(async(req, res)=>{
     try {
-        res.clearCookie('token')
+        res.clearCookie('token');
         res.status(200).json({
             success: true
-        })
+        });
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error);
     }
 })
 
