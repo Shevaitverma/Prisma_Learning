@@ -6,19 +6,29 @@ const isLoggedIn = async(req, res, next)=>{
     try {
         const token = req.cookies.token;
         if(!token){
-            res.send("please login")
+            res.status(401);
             throw new Error("you are not logged in")
         }
+        //varify token
         const decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.user =await prisma.user.findUnique({
+        const user =await prisma.user.findUnique({
             where:{
                 id: decode.userId
             }
         })
+        if(!user){
+            res.status(401);
+            throw new Error("user not found");
+        }
+        req.user = user
         next()
+
+
     } catch (error) {
-        throw new Error(error)
+        res.status(401)
+        throw new Error("please login again");
     }
+
 }
 
 module.exports = isLoggedIn;

@@ -1,6 +1,7 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const errorHandler = require("./middlewares/errorHamdler")
 
 
 const app = express();
@@ -11,8 +12,12 @@ const postRouter = require("./routes/postRoutes");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+
 //cookie middleware
 app.use(cookieParser());
+
+// error middleware
+app.use(errorHandler);
 
 // testing route
 app.get("/",(req, res)=>{
