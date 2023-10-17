@@ -5,7 +5,7 @@ const { createPost, updatePost, deletePost, getAllPost, getPost } = require("../
 
 
 router.post("/create", isLoggedIn, createPost);
-router.put("/update", isLoggedIn, updatePost);
+router.put("/update/:id", isLoggedIn, updatePost);
 router.delete("/delete/:id", isLoggedIn, deletePost);
 router.get("/get", getAllPost);
 router.get("/get/:id", getPost);

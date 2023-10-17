@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const isLoggedIn = async(req, res, next)=>{
     try {
-        const token = req.cookie.token;
+        const token = req.cookies.token;
         if(!token){
             res.send("please login")
             throw new Error("you are not logged in")
@@ -12,7 +12,7 @@ const isLoggedIn = async(req, res, next)=>{
         const decode = jwt.verify(token, process.env.JWT_SECRET);
         req.user =await prisma.user.findUnique({
             where:{
-                id: decoded.userId
+                id: decode.userId
             }
         })
         next()
